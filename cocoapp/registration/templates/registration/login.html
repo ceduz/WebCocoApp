@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>COCOAPP | Log in</title>
+
+    {% load static %}
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'farmer/plugins/fontawesome-free/css/all.css' %}">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="{% static 'registration/plugins/icheck-bootstrap/icheck-bootstrap.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'farmer/dist/css/adminlte.css' %}">
+</head>
+
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <!-- /.login-logo -->
+        <div class="card card-outline card-primary" style="padding: 20px;">
+            <div href="index3.html" class="brand-link" style="margin: 30px;">
+                <img src="{% static 'farmer/dist/img/logo_2.png' %}" alt="COCOAPP Logo" class="img-fluid">
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg" style="font-size: 1.2rem; color: #693F29;">Ingresa tus datos para iniciar tu
+                    sesión en COCOAPP</p>
+
+                <form action="" method="post"> {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <p style="color:red;">Usuario o contraseña incorrectos, prueba de nuevo.</p>
+                    {% endif %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="username" required class="form-control" placeholder="Ingresa tu usuario">
+                    <!-- <input type="email" class="form-control" placeholder="Ingresa tu e-mail">
+                    <div class="input-group-append">
+                    <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                    </div>
+                    </div> -->
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" required class="form-control" placeholder="Ingresa tu contraseña">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="col-15">
+                            <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                        </div>
+                    </div>
+                </form>
+                <br>
+                <p class="mb-1">
+                    <a href="forgot-password.html" style="font-size: 1.2rem; color: #693F29;">He olvidado mi
+                        contraseña</a>
+                </p>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.login-box -->
+
+</body>
+
+</html>
