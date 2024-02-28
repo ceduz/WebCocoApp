@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COCOAPP | {% block title %}{% endblock %}</title>
+
+  {% load static %}
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'farmer/plugins/fontawesome-free/css/all.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'registration/plugins/icheck-bootstrap/icheck-bootstrap.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'farmer/dist/css/adminlte.css' %}">
+</head>
+
+{% block content %}{% endblock %}
+
+
+</html>

@@ -15,19 +15,10 @@
   <!-- IonIcons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
+  {% block css_stylesheet %}{% endblock %}
   <link rel="stylesheet" href="{% static 'farmer/dist/css/adminlte.css' %}">
 </head>
-<!--
-`body` tag options:
-
-  Apply one or more of the following classes to to the body tag
-  to get the desired effect
-
-  * sidebar-collapse
-  * sidebar-mini
--->
-
-<body class="hold-transition sidebar-mini sidebar-collapse">
+<body class="hold-transition sidebar-mini sidebar-collapse layout-navbar-fixed">
   <div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -63,7 +54,7 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="index3.html" class="brand-link">
+      <a href="index3.html" class="brand-link elevation-4">
         <img src="{% static 'farmer/dist/img/cocoapp.png' %}" alt="COCOAPP Logo"
           class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light" style="font-size: 1.3rem;">COCOAPP</span>
@@ -131,7 +122,7 @@
         <h5>COCOAPP</h5>
         <hr class="mb-2">
         <div class="mb-1">
-          <a href="{% url 'weather_forecast' %}" style="display: flex;">
+          <a href="{% url 'index_farmer' %}" style="display: flex;">
             <i class="fas fa-tree" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
             <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
               Pronóstico de clima
@@ -184,6 +175,7 @@
   <script src="{% static 'farmer/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <!-- AdminLTE -->
   <script src="{% static 'farmer/dist/js/adminlte.js' %}"></script>
+  {% block js_script %}{% endblock %}
 
 </body>
 

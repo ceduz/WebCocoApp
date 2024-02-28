@@ -130,5 +130,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Auth redirects
-LOGIN_REDIRECT_URL = 'weather_forecast'
+LOGIN_REDIRECT_URL = 'index_farmer'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Emails
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+else:
+    #crear para producción
+    pass

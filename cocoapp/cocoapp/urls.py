@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-
 from django.conf import settings
 
 urlpatterns = [
@@ -26,7 +25,8 @@ urlpatterns = [
     # Paths del admin
     path('admin/', admin.site.urls),
     # Paths de auth
-    path('accounts/', include('django.contrib.auth.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('registration.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,6 +1,8 @@
 {% extends 'farmer/base.html' %}
-
-
+{% load static %}
+{% block css_stylesheet %}
+  <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+  {% endblock %}
 {% block content %}
  <!-- Content Header (Page header) -->
  <div class="content-header">
@@ -17,6 +19,129 @@
         </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
+
+    <div id="div-weather" class="row">
+
+    </div>
   </div>
   <!-- /.content-header -->
+
+{% endblock %}
+
+{% block js_script %}
+  <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+  <script>
+    let divWeather = document.getElementById("div-weather")
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var latitud = position.coords.latitude;
+        var longitud = position.coords.longitude;
+        enviarUbicacion(latitud, longitud);
+      },
+        function(error) {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              $(function() {
+                toastr.error('El usuario denegó el permiso para acceder a la geolocalización. Por tal razón no se visualizará el estado del clima.')
+              });
+              //console.log("El usuario denegó el permiso para acceder a la geolocalización.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              $(function() {
+                toastr.error('Información de ubicación no disponible. Por tal razón no se visualizará el estado del clima.')
+              });
+              //console.log("Información de ubicación no disponible.");
+              break;
+            case error.TIMEOUT:
+              $(function() {
+                toastr.error('Se agotó el tiempo de espera para obtener la ubicación. Por tal razón no se visualizará el estado del clima.')
+              });
+              //console.log("Se agotó el tiempo de espera para obtener la ubicación.");
+              break;
+            case error.UNKNOWN_ERROR:
+              $(function() {
+                toastr.error('Ocurrió un error desconocido al obtener la ubicación. Por tal razón no se visualizará el estado del clima.')
+              });
+              //console.log("Ocurrió un error desconocido al obtener la ubicación.");
+              break;
+          }
+        });
+    } else {
+        alert("La geolocalización no está soportada por este navegador.");
+    }
+
+    function enviarUbicacion(latitud, longitud) {  
+      //alert("Latitud: " + latitud + ", longitud: " + longitud);
+      const url = "{% url 'weather' %}" + "?lat=" + latitud + "&lon=" + longitud
+      fetch(url, {'credentials':'include'}).then(response => response.json()).then(function(data){
+        const divMd4 = document.createElement('div');
+        divMd4.classList.add('col-md-1');
+        divWeather.appendChild(divMd4);
+
+        if (data[0]['cod']=='200'){
+          data.slice(1).forEach(item => {
+            const divMd4 = document.createElement('div');
+            divMd4.classList.add('col-md-2');
+
+            const card = document.createElement('div');
+            card.classList.add('card');
+            
+            const cardHeader = document.createElement('div');
+            cardHeader.classList.add('card-header');
+            cardHeader.setAttribute('style', 'display: flex; justify-content: center; flex-start;align-items: center;');
+            
+
+            const cardTitle = document.createElement('h3');
+            cardTitle.classList.add('card-title');
+
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
+            cardBody.setAttribute('style', 'display: flex; flex-direction: row; justify-content: center; align-items: center;');
+            
+            const pTemp = document.createElement('p');     
+            pTemp.setAttribute('style', 'font-size: 0.8 rem; margin-bottom: 0 !important;');
+
+            const pDescrip = document.createElement('p'); 
+            pDescrip.setAttribute('style', 'font-size: 1.1rem; margin-bottom: 0 !important;');
+
+            const imgWeather = document.createElement('img');
+            imgWeather.setAttribute('class', 'brand-image img-circle elevation-3');
+            imgWeather.setAttribute('style', 'width: 50px; margin-right: 10px;');
+            imgWeather.setAttribute('src', 'http://openweathermap.org/img/w/'+item['icon']+'.png');
+            imgWeather.setAttribute('alt', item['description']);
+
+            const imgTmp = document.createElement('img');
+            imgTmp.setAttribute('class', 'brand-image');
+            imgTmp.setAttribute('style', 'width: 50px;');
+            imgTmp.setAttribute('src', "{% static 'farmer/dist/img/icon_temp.png' %}");
+            imgTmp.setAttribute('alt', 'icon_temp');
+
+            divWeather.appendChild(divMd4);
+            divMd4.appendChild(card);
+            card.appendChild(cardHeader);
+            card.appendChild(cardBody);
+            cardHeader.appendChild(imgWeather);
+            cardHeader.appendChild(pDescrip);
+            cardTitle.innerHTML = '<p style="font-size: 0.8rem; text-align: center; margin-bottom: 0 !important;">'+ item['date'] + '</p>';
+
+            const divTemp = document.createElement('div');
+            divTemp.setAttribute('style', 'display: flex;flex-direction: column;text-align: center;');
+
+            pTemp.innerText = item['min_temp'] + '°C -' + item['max_temp'] + '°C';
+            pDescrip.innerText = item['description'];
+            cardBody.appendChild(imgTmp);
+            cardBody.appendChild(divTemp);
+            divTemp.appendChild(pTemp);
+            divTemp.appendChild(cardTitle);
+            
+          });
+        }else{
+          $(function() {
+            toastr.error(data['message'])
+          });
+        }
+      })
+           
+    }
+  </script>
 {% endblock %}
