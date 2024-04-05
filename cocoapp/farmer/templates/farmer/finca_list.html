@@ -1,0 +1,178 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block content %}
+ <!-- Content Header (Page header) -->
+ <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Mi finca</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          <div class="alert alert-danger" role="alert">
+              {{ message }}
+          </div>
+        {% elif message.tags == 'success' %}
+          <div class="alert alert-success" role="alert">
+              {{ message }}
+          </div>
+        {% else %}
+          <div class="alert alert-info" role="alert">
+              {{ message }}
+          </div>
+        {% endif %}
+        <script>
+          setTimeout(function() {
+              var element = document.querySelector('.alert');
+              if (element) {
+                  element.style.display = 'none';
+              }
+          }, 3000);
+        </script>
+      {% endfor %}
+    {% endif %}
+    <div class="callout callout-info" style="font-size: 1.2rem;">
+      <h3><i class="fas fa-info"></i> Nota:</h3>
+      Aquí va información relevante para notificar el uso de esta página para el usuario final.
+    </div>
+    <!-- Main content -->
+    <div class="invoice p-3 mb-3">
+      {% if finca %}
+        {% for finca in finca %}
+          <!-- title row -->
+          <div class="row">
+            <div class="col-12">
+              <h3>
+                <i class="fas fa-image"></i> {{ finca.name }}
+                <small class="float-right" style="font-size: 0.9rem;">Ultima actualización: {{ finca.updated }}</small>
+              </h3>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- info row -->
+          <div class="row invoice-info">
+            <div class="col-sm-4 invoice-col" style="font-size: 1.3rem; padding-bottom: 20px;">
+              <br>
+              <strong>Dueño: </strong>{{ finca.owner_name.first_name }} {{ finca.owner_name.last_name }}<br>
+              <strong>Tamaño de finca (m2): </strong>{{ finca.size_fina }}<br> 
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col" style="font-size: 1.3rem;">
+              <br>
+              <strong>Cantidad de árboles cultivados: </strong>{{ finca.num_trees_grown }}<br>
+              <strong>Edad de árboles (años): </strong>{{ finca.age_trees }}<br>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col" style="font-size: 1.3rem;">
+              <br>
+              <strong>Latitud: </strong>{{ finca.latitud }}<br>
+              <strong>Longitud: </strong>{{ finca.longitud }}<br>
+            </div>
+            <!-- /.col -->
+          </div>
+          <!-- /.row -->
+
+          <!-- this row will not appear when printing -->
+          <div class="row no-print">
+            <button type="button" class="btn btn-primary float-right"  style="margin-right: 5px;" onclick="window.location.href = `{% url 'cultivationNovelty' %}`"> Ingresar novedad de cultivos </button>
+            <div class="col-10">
+              <button type="button" class="btn btn-primary float-right toastsDefaultDefault" style="margin-right: 5px;" data-toggle="modal" data-target="#modal-lg"> Actualizar Mi finca </button>
+            </div>
+          </div>
+
+          <div class="modal fade" id="modal-lg">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Actualizar Información de la Finca</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <form method="post" action="{% url 'myFinca-update' finca.pk %}">
+                  <div class="card-body">
+                    {% csrf_token %}  
+                    {% for field in form %}
+                      
+                      {% if field.name == 'name' or field.name == 'latitud' or field.name == 'num_trees_grown' %}
+                        <div class="row">
+                      {% endif %}
+
+                      <div class="col-sm-6">
+                        <label for="id_{{ field.name }}">{{ field.label }}</label>
+                        {{ field }}
+                      </div>
+
+                      {% if field.name == 'size_fina' or field.name == 'longitud' or field.name == 'age_trees' %}
+                        </div> 
+                      {% endif %}
+                    {% endfor %}
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- /.modal -->
+        {% endfor %}
+      {% else %}
+        <p style="font-size: 1.3rem;">No Existe información de la finca. Haga clic en el botón crear para ingresar la información de su finca.</p>
+        <div class="row no-print">
+          <div class="col-6">
+            <button type="button" class="btn btn-primary float-right toastsDefaultDefault"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-lg"> Crear </button>
+          </div>
+        </div>
+
+        <div class="modal fade" id="modal-lg">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Creación de datos de mi Finca</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <form method="post" action="{% url 'myFinca-create' %}">
+                <div class="card-body">
+                  {% csrf_token %}  
+                  {% for field in form %}
+                    
+                    {% if field.name == 'name' or field.name == 'latitud' or field.name == 'num_trees_grown' %}
+                      <div class="row">
+                    {% endif %}
+
+                    <div class="col-sm-6">
+                      <label for="id_{{ field.name }}">{{ field.label }}</label>
+                      {{ field }}
+                    </div>
+
+                    {% if field.name == 'size_fina' or field.name == 'longitud' or field.name == 'age_trees' %}
+                      </div> 
+                    {% endif %}
+                  {% endfor %}
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+      {% endif %}
+    </div>
+  </div>
+  <!-- /.content-header -->  
+{% endblock %}

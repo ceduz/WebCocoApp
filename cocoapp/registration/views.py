@@ -1,7 +1,22 @@
 from .forms import UserCreationFormWithEmail
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
+from django.http import Http404
 from django import forms   
+
+def redirect_login(request):
+    return redirect('login')
+
+def redirect_based_on_profile(request):
+    user = request.user
+    if user.userprofile.profile.profile == "Agricultor":
+        return redirect('index_farmer')
+    elif user.userprofile.profile.profile == "Ingeniero Agronomo":
+        return redirect('index_farmer')
+    else:
+        raise Http404("Usuario no autenticado.")
+
 
 # Create your views here.
 class SignUpView(CreateView):

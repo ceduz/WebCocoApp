@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
 from django.conf import settings
+from .views import redirect_login
 
 urlpatterns = [
+    #proyect
+    path('', redirect_login, name='redirect_login'),
     # Paths del farmer
-    path('', include('farmer.urls')),
+    path('farmer/', include('farmer.urls')),
     # Paths del admin
     path('admin/', admin.site.urls),
     # Paths de auth

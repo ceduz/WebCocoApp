@@ -1,0 +1,65 @@
+<form id="formAdd" method="post" hx-post="{% url 'cultNov-create' %}">
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var element = document.querySelector('.alert-danger');
+                        if (element) {
+                            element.style.display = 'none';
+                        }
+                    }, 5000);
+                </script>
+            {% elif message.tags == 'success' %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var element = document.querySelector('.alert-success');
+                        if (element) {
+                            element.style.display = 'none';
+                        }
+                    }, 3000);
+                </script>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var element = document.querySelector('.alert-info');
+                        if (element) {
+                            element.style.display = 'none';
+                        }
+                    }, 2000);
+                </script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% csrf_token %}  
+    {% for field in form %}
+      
+    {% if field.name == 'harvest' or field.name == 'inventory' or field.name == 'pruning' %}
+        <div class="row">
+      {% endif %}
+
+      <div class="col-sm-6">
+        <label for="id_{{ field.name }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+            <p style="color:red;" class="p-errors">{{ field.errors|first }} </p>
+        {% endif %}
+      </div>
+
+      {% if field.name == 'irrigation' or field.name == 'fertilizer' or field.name == 'pest_control' %}
+        </div> 
+      {% endif %}
+    {% endfor %}
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" id="guardarAdd">Guardar</button>
+    </div>
+</form>

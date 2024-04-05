@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="utf-8">
@@ -28,10 +28,10 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="index3.html" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
+          <a href="{% url 'index_farmer' %}" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="#" class="nav-link" style="font-size: 1.3rem;">prueba</a>
+          <a href="{% url 'myFinca' %}" class="nav-link" style="font-size: 1.3rem;">Mi finca</a>
         </li>
       </ul>
 
@@ -68,38 +68,50 @@
             <img src="{% static 'farmer/dist/img/user2-160x160.webp' %}" class="img-circle elevation-2"
               alt="User Image">
           </div>
-          <div class="info">
-            <a href="#" class="d-block" style="font-size: 1.3rem;">Leonardo Talero</a>
-          </div>
+          {% if user.is_authenticated %}
+            <div class="info">
+              <a href="#" class="d-block" style="font-size: 1 rem;">{{ user.first_name }} {{ user.last_name }}</a>
+            </div>
+          {% endif %}
         </div>
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-            <li class="nav-item">
-              <a href="pages/widgets.html" class="nav-link">
-                <i class="nav-icon fas fa-tree"></i>
-                <p style="font-size: 1.3rem;">
-                  Pronóstico clima
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/widgets.html" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p style="font-size: 1.3rem;">
-                  Novedad cultivo
-                </p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/widgets.html" class="nav-link">
-                <i class="nav-icon fas fa-book"></i>
-                <p style="font-size: 1.3rem;">
-                  Inventario
-                </p>
-              </a>
-            </li>
+            {% if user.userprofile.profile.profile == "Agricultor" %}
+              <li class="nav-item">
+                <a href="{% url 'myFinca' %}" class="nav-link">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p style="font-size: 1.3rem;">
+                    Mi finca
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory' %}" class="nav-link">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p style="font-size: 1.3rem;">
+                    Inventario
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'index_farmer' %}" class="nav-link">
+                  <i class="nav-icon fas fa-tree"></i>
+                  <p style="font-size: 1.3rem;">
+                    Pronóstico clima
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'cultivationNovelty' %}" class="nav-link">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p style="font-size: 1.3rem;">
+                    Novedad cultivo
+                  </p>
+                </a>
+              </li>
+            {% endif %}
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -121,30 +133,40 @@
       <div class="p-3 control-sidebar-content">
         <h5>COCOAPP</h5>
         <hr class="mb-2">
-        <div class="mb-1">
-          <a href="{% url 'index_farmer' %}" style="display: flex;">
-            <i class="fas fa-tree" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
-            <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
-              Pronóstico de clima
-            </p>
-          </a>
-        </div>
-        <div class="mb-1">
-          <a href="pages/widgets.html" style="display: flex;">
-            <i class="fas fa-edit" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
-            <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
-              Novedad cultivo
-            </p>
-          </a>
-        </div>
-        <div class="mb-1">
-          <a href="pages/widgets.html" style="display: flex;">
-            <i class="fas fa-book" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
-            <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
-              Inventario
-            </p>
-          </a>
-        </div>
+        {% if user.userprofile.profile.profile == "Agricultor" %}
+          <div class="mb-1">
+            <a href="{% url 'myFinca' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
+                Mi finca
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'inventory' %}" style="display: flex;">
+              <i class="fas fa-book" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
+                Inventario
+              </p>
+            </a>  
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'index_farmer' %}" style="display: flex;">
+              <i class="fas fa-tree" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
+                Pronóstico de clima
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'cultivationNovelty' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.6rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.3rem; margin-bottom: 0 !important;">
+                Novedad cultivo
+              </p>
+            </a>
+          </div>
+        {% endif %}
         <hr class="mb-2">
         <div class="mb-1">
           <form action="{% url 'logout' %}" method="post"> {% csrf_token %}
@@ -173,9 +195,9 @@
   <script src="{% static 'farmer/plugins/jquery/jquery.min.js' %}"></script>
   <!-- Bootstrap -->
   <script src="{% static 'farmer/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  {% block js_script %}{% endblock %}
   <!-- AdminLTE -->
   <script src="{% static 'farmer/dist/js/adminlte.js' %}"></script>
-  {% block js_script %}{% endblock %}
 
 </body>
 

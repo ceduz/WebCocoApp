@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'registration.middleware.RedirectIfAuthenticatedMiddleware',
 ]
 
 ROOT_URLCONF = 'cocoapp.urls'
@@ -107,7 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
@@ -130,7 +132,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Auth redirects
-LOGIN_REDIRECT_URL = 'index_farmer'
+#LOGIN_REDIRECT_URL = 'index_farmer'
+LOGIN_REDIRECT_URL = 'redirect_based_on_profile'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Emails

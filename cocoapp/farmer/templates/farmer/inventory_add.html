@@ -1,0 +1,73 @@
+<form id="formAdd" method="post" hx-post="{% url 'inventory-create' %}">
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          <div class="alert alert-danger" role="alert">
+              {{ message }}
+          </div>
+        {% elif message.tags == 'success' %}
+          <div class="alert alert-success" role="alert">
+              {{ message }}
+          </div>
+        {% else %}
+          <div class="alert alert-info" role="alert">
+              {{ message }}
+          </div>
+        {% endif %}
+        <script>
+          setTimeout(function() {
+              var element = document.querySelector('.alert');
+              if (element) {
+                  element.style.display = 'none';
+              }
+          }, 2000);
+        </script>
+      {% endfor %}
+  {% endif %}
+  {% csrf_token %}  
+  {% for field in form %}
+  
+      {% if field.name == 'name' or field.name == 'category' or field.name == 'unit_value' or field.name == 'quantity_consumed' %}
+          <div class="row">
+      {% endif %}
+
+      <div class="col-sm-6">
+          {% if field.name == 'due_date' %}
+            <div class="form-group">
+              <label for="id_{{ field.name }}">{{ field.label }}</label>
+              <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                {{ field }}
+                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+            {% if field.errors %}
+              <p style="color:red;" class="p-errors">{{ field.errors|first }} </p>
+            {% endif %}
+          {% elif field.name == 'unit_value' %}
+            <label for="id_{{ field.name }}">{{ field.label }}</label>
+            <div class="input-group">
+              <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+              {{ field }}
+            </div>
+            {% if field.errors %}
+              <p style="color:red;" class="p-errors">{{ field.errors|first }} </p>
+            {% endif %}
+          {% else  %}
+            <label for="id_{{ field.name }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <p style="color:red;" class="p-errors">{{ field.errors|first }} </p>
+            {% endif %}
+          {% endif %}
+      </div>
+
+      {% if field.name == 'composition' or field.name == 'due_date' or field.name == 'purchased_amount' or field.name == 'quantity_consumed' %}
+          </div> 
+      {% endif %}
+  {% endfor %}
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" id="guardarAdd">Guardar</button>
+  </div>
+</form>
