@@ -2,6 +2,35 @@
 {% load static %}
 {% block css_stylesheet %}
   <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+  <style>
+    .div-no-data-chart {
+        height: 515px; /* Altura similar a la del gráfico */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px dashed #ccc; /* Borde para indicar el área */
+        background-color: #f9f9f9; /* Fondo claro */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        color: #777; /* Color del texto */
+        font-size: 20px;
+        font-style: italic;
+        border-radius: 0.25rem;
+    }
+
+    .div-no-data-weather {
+        height: 190px; /* Altura similar a la del gráfico */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px dashed #ccc; /* Borde para indicar el área */
+        background-color: #f9f9f9; /* Fondo claro */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        color: #777; /* Color del texto */
+        font-size: 20px;
+        font-style: italic;
+        border-radius: 0.25rem;
+    }
+  </style>
 {% endblock %}
 {% block content %}
  <!-- Content Header (Page header) -->
@@ -20,16 +49,40 @@
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
 
-    <div id="div-weather" class="row">
+    <input type="text" id="id" hidden value="{{ pk_finca }}">
 
-    </div>
+    <div id="div-weather" class="row"></div>
+    <div id="divNoDataweather" class="div-no-data-weather col-md-12 d-none"></div>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div id="divNoDataChartPretot" class="div-no-data-chart col-md-6 d-none">
+            No existen datos para graficar la precipitación
+          </div>
+          <div class="col-md-6" id="div-chart-pretotcor"> 
+            <!-- grafica -->
+          </div>
+          <div id="divNoDataChartTemp" class="div-no-data-chart col-md-6 d-none">
+            No existen datos para graficar la temperatura promedio
+          </div>
+          <div class="col-md-6" id="div-chart-temp"> 
+            <!-- grafica -->
+          </div>
+        </div>
+      </div>
+    </section>
+    
   </div>
   <!-- /.content-header -->
 
 {% endblock %}
 
 {% block js_script %}
+  <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
   <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+  <script src="{% static 'farmer/plugins/chart/chartjs.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/weatherFinca.js' %}"></script>
   <script>
     let divWeather = document.getElementById("div-weather")
     if (navigator.geolocation) {
@@ -43,24 +96,44 @@
             case error.PERMISSION_DENIED:
               $(function() {
                 toastr.error('El usuario denegó el permiso para acceder a la geolocalización. Por tal razón no se visualizará el estado del clima.')
+                if ($('#divNoDataweather').hasClass('d-none')) {
+                  $('#divNoDataweather').removeClass('d-none');
+                  $('#divNoDataweather').empty();
+                  $('#divNoDataweather').append("El usuario denegó el permiso para acceder a la geolocalización. Por tal razón no se visualizará el estado del clima");
+                }
               });
               //console.log("El usuario denegó el permiso para acceder a la geolocalización.");
               break;
             case error.POSITION_UNAVAILABLE:
               $(function() {
                 toastr.error('Información de ubicación no disponible. Por tal razón no se visualizará el estado del clima.')
+                if ($('#divNoDataweather').hasClass('d-none')) {
+                  $('#divNoDataweather').removeClass('d-none');
+                  $('#divNoDataweather').empty();
+                  $('#divNoDataweather').append("Información de ubicación no disponible. Por tal razón no se visualizará el estado del clima.");
+                }
               });
               //console.log("Información de ubicación no disponible.");
               break;
             case error.TIMEOUT:
               $(function() {
                 toastr.error('Se agotó el tiempo de espera para obtener la ubicación. Por tal razón no se visualizará el estado del clima.')
+                if ($('#divNoDataweather').hasClass('d-none')) {
+                  $('#divNoDataweather').removeClass('d-none');
+                  $('#divNoDataweather').empty();
+                  $('#divNoDataweather').append("Se agotó el tiempo de espera para obtener la ubicación. Por tal razón no se visualizará el estado del clima.");
+                }
               });
               //console.log("Se agotó el tiempo de espera para obtener la ubicación.");
               break;
             case error.UNKNOWN_ERROR:
               $(function() {
                 toastr.error('Ocurrió un error desconocido al obtener la ubicación. Por tal razón no se visualizará el estado del clima.')
+                if ($('#divNoDataweather').hasClass('d-none')) {
+                  $('#divNoDataweather').removeClass('d-none');
+                  $('#divNoDataweather').empty();
+                  $('#divNoDataweather').append("Ocurrió un error desconocido al obtener la ubicación. Por tal razón no se visualizará el estado del clima.");
+                }
               });
               //console.log("Ocurrió un error desconocido al obtener la ubicación.");
               break;
@@ -74,6 +147,8 @@
       //alert("Latitud: " + latitud + ", longitud: " + longitud);
       const url = "{% url 'weather' %}" + "?lat=" + latitud + "&lon=" + longitud
       fetch(url, {'credentials':'include'}).then(response => response.json()).then(function(data){
+        console.log("latitud: ", latitud)
+        console.log("longitud: ", longitud)
         const divMd4 = document.createElement('div');
         divMd4.classList.add('col-md-1');
         divWeather.appendChild(divMd4);

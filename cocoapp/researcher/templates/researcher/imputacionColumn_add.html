@@ -1,0 +1,49 @@
+<form id="formAdd" method="post" hx-post="{% url 'typeImpFieldDataClima-create' %}">
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          <div class="alert alert-danger" role="alert">
+              {{ message }}
+          </div>
+        {% elif message.tags == 'success' %}
+          <div class="alert alert-success" role="alert">
+              {{ message }}
+          </div>
+        {% else %}
+          <div class="alert alert-info" role="alert">
+              {{ message }}
+          </div>
+        {% endif %}
+        <script>
+          setTimeout(function() {
+              var element = document.querySelector('.alert');
+              if (element) {
+                  element.style.display = 'none';
+              }
+          }, 3000);
+        </script>
+      {% endfor %}
+  {% endif %}
+  {% csrf_token %}  
+  {% for field in form %}
+  
+      {% if field.name == 'finca' or field.name == 'allsky_sfc_sw_dwn' or field.name == 't2m_max' or field.name == 't2mdew' or field.name == 'rh2m' %}
+        <div class="row">
+      {% endif %}
+
+      <div class="col-sm-6">
+        <label for="id_{{ field.name }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <p style="color:red;" class="p-errors">{{ field.errors|first }} </p>
+        {% endif %}
+      </div>
+
+      {% if field.name == 'finca' or field.name == 'clrsky_sfc_sw_dwn' or field.name == 't2m_min' or field.name == 'prectotcorr' or field.name == 'ws2m' %}
+        </div> 
+      {% endif %}
+  {% endfor %}
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" id="guardarAdd">Imputar datos</button>
+  </div>
+</form>

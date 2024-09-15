@@ -18,6 +18,7 @@
   {% block css_stylesheet %}{% endblock %}
   <link rel="stylesheet" href="{% static 'farmer/dist/css/adminlte.css' %}">
 </head>
+{% load path_tags %}
 <body class="hold-transition sidebar-mini sidebar-collapse layout-navbar-fixed">
   <div class="wrapper">
     <!-- Navbar -->
@@ -28,10 +29,21 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="{% url 'index_farmer' %}" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
+          {% if user.userprofile.profile.profile == "Agricultor" %}
+            <a href="{% url 'index_farmer' %}" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
+          {% elif user.userprofile.profile.profile == "Investigador" %}
+            <a href="{% url 'apiParametersFinca' %}" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
+          {% elif user.userprofile.profile.profile == "Ingeniero Agrónomo" %}
+            <a href="{% url 'aPIParameterNasaFinca' %}" class="nav-link" style="font-size: 1.3rem;">Inicio</a>
+          {% endif %}
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="{% url 'myFinca' %}" class="nav-link" style="font-size: 1.3rem;">Mi finca</a>
+          {% if user.userprofile.profile.profile == "Agricultor" %}
+            <a href="{% url 'myFinca' %}" class="nav-link" style="font-size: 1.3rem;">Mi finca</a>
+          {% endif %}
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="{% url 'contact_private' %}" class="nav-link" style="font-size: 1.3rem;">Contactenos</a>
         </li>
       </ul>
 
@@ -54,7 +66,16 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="index3.html" class="brand-link elevation-4">
+
+      {% if user.userprofile.profile.profile == "Agricultor" %}
+        <a href="{% url 'myFinca' %}" class="brand-link elevation-4">
+      {% elif user.userprofile.profile.profile == "Investigador" %}
+        <a href="{% url 'apiParametersFinca' %}" class="brand-link elevation-4">
+      {% elif user.userprofile.profile.profile == "Ingeniero Agrónomo" %}
+        <a href="{% url 'aPIParameterNasaFinca' %}" class="brand-link elevation-4">
+      {% else %}
+        <a href="#" class="brand-link elevation-4">
+      {% endif %}
         <img src="{% static 'farmer/dist/img/cocoapp.png' %}" alt="COCOAPP Logo"
           class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light" style="font-size: 1.3rem;">COCOAPP</span>
@@ -65,12 +86,16 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="{% static 'farmer/dist/img/user2-160x160.webp' %}" class="img-circle elevation-2"
-              alt="User Image">
+            {% if request.user.personalinformation.avatar %}
+            <img src="/media/{{ request.user.personalinformation.avatar }}" class="img-circle elevation-2" alt="User Image">
+            {% else %}
+            <img src="{% static 'farmer/dist/img/user2-160x160.png' %}" class="img-circle elevation-2" alt="User Image">
+            {% endif %}
           </div>
           {% if user.is_authenticated %}
             <div class="info">
-              <a href="#" class="d-block" style="font-size: 1 rem;">{{ user.first_name }} {{ user.last_name }}</a>
+              <a href="{% url 'personal_information' %}" class="d-block" style="font-size: 1 rem;">{{ user.first_name }} {{ user.last_name }}</a>
+              <p style="font-size: smaller; color: #c2c7d0; margin: 0;">{{ user.userprofile.profile.profile }}</p>
             </div>
           {% endif %}
         </div>
@@ -108,6 +133,83 @@
                   <i class="nav-icon fas fa-edit"></i>
                   <p style="font-size: 1.3rem;">
                     Novedad cultivo
+                  </p>
+                </a>
+              </li>
+            {% elif user.userprofile.profile.profile == "Investigador" %}
+              <li class="nav-item">
+                <a href="{% url 'apiParametersFinca' %}"  class="nav-link{% if request.path|starts_with:'/researcher/climatological/' %} active{% endif %}">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p style="font-size: 1rem;">
+                    Datos Climatológicos
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'typeImpFieldDataClima' %}" class="nav-link{% if request.path|starts_with:'/researcher/imputation/' %} active{% endif %}">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p style="font-size: 1rem;">
+                    Imputación de datos
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item {% if request.path|starts_with:'/researcher/model/' %}menu-open{% endif %}">
+                <a href="#" class="nav-link {% if request.path|starts_with:'/researcher/model/' %}active{% endif %}">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>
+                    Modelos
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'paramDeterministicModel' %}" class="nav-link {% if request.path|starts_with:'/researcher/model/deterministicModel/' %}active{% endif %}">
+                      <i style="font-style: normal !important;">1</i>
+                      <p style="font-size: 1rem;">
+                        Modelo toma de decisión
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'iterativeModelling' %}" class="nav-link {% if request.path|starts_with:'/researcher/model/iterativeModelling/' %}active{% endif %}">
+                      <i style="font-style: normal !important;"></i>2</i>
+                      <p style="font-size: 1rem;">
+                        Modelo iterativo
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'forecastScenarios' %}" class="nav-link {% if request.path|starts_with:'/researcher/model/forecastScenarios/' %}active{% endif %}">
+                      <i style="font-style: normal !important;"></i>2.1</i>
+                      <p style="font-size: 1rem;">
+                        Generador de escenarios
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'mergeScenarios' %}" class="nav-link {% if request.path|starts_with:'/researcher/model/mergeScenarios/' %}active{% endif %}">
+                      <i style="font-style: normal !important;">2.2</i>
+                      <p style="font-size: 1rem;">
+                        Selección de escenarios
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'twoStageModel' %}" class="nav-link {% if request.path|starts_with:'/researcher/model/twoStageModel/' %}active{% endif %}">
+                      <i style="font-style: normal !important;">2.3</i>
+                      <p style="font-size: 0.9 rem;">
+                        Modelo de optimización
+                      </p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            {% elif user.userprofile.profile.profile == "Ingeniero Agrónomo" %}
+              <li class="nav-item">
+                <a href="{% url 'aPIParameterNasaFinca' %}" class="nav-link {% if request.path|starts_with:'/agricultural/aPIParameterNasaFinca/' %}active{% endif %}">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p style="font-size: 1.3rem;">
+                    Calcular modelo
                   </p>
                 </a>
               </li>
@@ -166,14 +268,78 @@
               </p>
             </a>
           </div>
+        {% elif user.userprofile.profile.profile == "Investigador" %}
+          <div class="mb-1">
+            <a href="{% url 'apiParametersFinca' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Datos Climatológicos
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'typeImpFieldDataClima' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Imputación de datos
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'paramDeterministicModel' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Modelo toma de decisión
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'iterativeModelling' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Modelo iterativo
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'forecastScenarios' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Generador de escenarios
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'mergeScenarios' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                selección de escenarios
+              </p>
+            </a>
+          </div>
+          <div class="mb-1">
+            <a href="{% url 'twoStageModel' %}" style="display: flex;">
+              <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+              <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+                Modelo de optimización
+              </p>
+            </a>
+          </div>
         {% endif %}
+        <div class="mb-1">
+          <a href="{% url 'personal_information' %}" style="display: flex;">
+            <i class="fas fa-edit" style="font-size: 1.3rem; text-align: center; padding-right: 10px;"></i>
+            <p style="font-size: 1.2rem; margin-bottom: 0 !important;">
+              Perfil Usuario
+            </p>
+          </a>
+        </div>
         <hr class="mb-2">
         <div class="mb-1">
           <form action="{% url 'logout' %}" method="post"> {% csrf_token %}
             <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.3rem; margin-bottom: 0 !important;">Cerrar sesión</button>
           </form>
-        </a>
-      </div>
+        </div>
       <!-- Control sidebar content goes here -->
     </aside>
     <!-- /.control-sidebar -->

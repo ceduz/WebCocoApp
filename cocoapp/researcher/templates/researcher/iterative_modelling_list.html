@@ -1,0 +1,167 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-responsive/css/responsive.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-buttons/css/buttons.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'farmer/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/dist/css/researcher.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-7">
+          <h1 class="m-0">Datos del modelo iterativo</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+    <div class="callout callout-info" style="font-size: 1.2rem;">
+      <h3><i class="fas fa-info"></i> Nota:</h3>
+      Aquí va información relevante para notificar el uso de esta página para el usuario final.
+    </div>
+    <!-- Main content -->
+   
+      {% if iterativeModelling %}          
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Parametros del modelo</h2>
+            <div class="col-12">
+              <button type="button" title="Ejecutar nuevo proceso" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'iterativeModelling-create' %}" data-x-target="#content-modal-formAdd">Agregar</button>
+              <button type="button" title="Ir a generador de escenario" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault"  style="margin-right: 5px;"  onclick="window.location.href = `{% url 'forecastScenarios' %}`">Generar escenarios</button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body" id="card_body-table">
+            <table id="dtModelling" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Código de proceso iterativo</th>
+                  <th>Nombre de la finca</th>
+                  <th>Modelo aplicado a la columna</th>
+                  <th>power</th>
+                  <th>mean</th>
+                  <th>st_d</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for i in iterativeModelling %}
+                <tr>
+                  <td>{{ i.pk }}</td>
+                  <td>{{ i.finca.name }}</td>
+                  <td>{{ i.columns_api_nasa.name }}</td>
+                  <td>{{ i.power }}</td>
+                  <td>{{ i.mean }}</td>
+                  <td>{{ i.st_d }}</td>
+                  <td>
+                    <button type="button" title="Eliminar registro" data-toggle="tooltip" class="btn btn-primary float-right btnDel" style="margin: 1px;" data-name="{{ i.finca.name }}" data-id="{{ i.pk }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <button type="button" title="Ver summary del modelo" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault btnView" data-idfarm="{{ i.finca.pk }}" data-id="{{ i.pk }}" style="margin-right: 5px;">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button type="button" title="Ver graficas del modelo" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault btnViewGraph" data-idfarm="{{ i.finca.pk }}" data-id="{{ i.pk }}" style="margin-right: 5px;">
+                      <i class="fas fa-chart-pie"></i>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+          <!-- /.card-body -->
+        </div>      
+      {% else %}
+        <div class="invoice p-3 mb-3">
+          <p style="font-size: 1.3rem;">No existe datos de para alguna finca, Haga clic para ejecutar el modelo para una finca.</p>
+          <div class="row no-print">
+            <div class="col-6">
+              <button type="button" title="Ejecutar nuevo proceso" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'iterativeModelling-create' %}" data-x-target="#content-modal-formAdd">Ejecutar</button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+    <!-- /.content-header -->  
+    <div class="modal fade" id="modal-add">
+      <div class="modal-dialog modal-default">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Parametros para ejecutar el modelo iterativo</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="card-body" id="content-modal-formAdd" hx-target="this">
+            <!-- data modal -->
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="modal fade" id="modal-view">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="contentModalUpd">
+          <div class="modal-header">
+            <h4 class="modal-title">Summary</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="card-body" id="content-modal-view" style="text-align: center;">
+            <!-- data modal -->
+          </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+
+    <div class="modal fade" id="modal-viewGraph">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" id="contentModalUpd">
+          <div class="modal-header">
+            <h4 class="modal-title">Graficas</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="card-body" id="content-modal-viewGraph" style="text-align: center;">
+            <!-- data modal -->
+          </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+{% endblock %}
+{% block js_script %}
+  <script src="{% static 'farmer/plugins/datatables/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/dataTables.responsive.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/responsive.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/dataTables.buttons.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/jszip/jszip.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/pdfmake.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/vfs_fonts.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.html5.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.print.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.colVis.js' %}"></script>
+  <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+  <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/core.js' %}"></script>
+  <script src="{% static 'farmer/plugins/htmx/htmx.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/iterativeModelling.js' %}"></script>  
+{% endblock %}

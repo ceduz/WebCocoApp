@@ -1,4 +1,13 @@
-Django==5.0.2
+Django==5.0.4
 geographiclib==2.0
 pillow==10.2.0
 requests==2.31.0
+pandas==2.2.1
+scikit-learn==1.4.2
+statsmodels==0.14.2
+pmdarima==2.0.4
+django-pandas==0.6.7
+PuLP==2.8.0
+seaborn==0.13.2
+pillow==10.4.0
+django-recaptcha==4.0.0

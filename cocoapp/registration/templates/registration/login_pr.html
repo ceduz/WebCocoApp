@@ -1,0 +1,60 @@
+{% extends 'registration/base_login.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    <body class="hold-transition login-page">
+        <div class="login-box">
+            <!-- /.login-logo -->
+            <div class="card card-outline card-primary" style="padding: 20px;">
+                <div class="brand-link" style="margin: 30px;">
+                    <img src="{% static 'farmer/dist/img/logo_2.png' %}" alt="COCOAPP Logo" class="img-fluid">
+                </div>
+                <div class="card-body">
+                    <p class="login-box-msg" style="font-size: 1.2rem; color: #693F29;">Ingrese sus datos para iniciar su sesión en COCOAPP</p>
+                    {% if 'register' in request.GET %}
+                        <p style="font-size: 1.2rem; color: green;">Usuario registrado correctamente, ya puede ingresar.</p>
+                    {% endif %}
+                    <form action="" method="post"> {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <p style="color:red;">Usuario o contraseña incorrectos, prueba de nuevo.</p>
+                        {% endif %}
+                        <div class="input-group mb-3">
+                            <input type="text" name="username" required class="form-control" placeholder="Ingrese su usuario">
+                        <!-- <input type="email" class="form-control" placeholder="Ingresa tu e-mail">
+                        <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                        </div>
+                        </div> -->
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" name="password" required class="form-control" placeholder="Ingrese su contraseña">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="col-15">
+                                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <p class="mb-1">
+                        <a href="{% url 'password_reset' %}" style="font-size: 1.2rem; color: #693F29;">He olvidado mi
+                            contraseña</a>
+                    </p>
+                    <p class="mb-1">
+                        <a href="{% url 'signup' %}" style="font-size: 1.2rem; color: #693F29;">Registrarse</a>
+                    </p>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.login-box -->
+
+    </body>
+{% endblock %}

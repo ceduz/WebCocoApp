@@ -1,0 +1,123 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-responsive/css/responsive.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-buttons/css/buttons.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'farmer/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/dist/css/researcher.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-7">
+          <h1 class="m-0">Datos modelo determinista para cantidad de riego diaria</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+    <div class="callout callout-info" style="font-size: 1.2rem;">
+      <h3><i class="fas fa-info"></i> Nota:</h3>
+      Aquí va información relevante para notificar el uso de esta página para el usuario final.
+    </div>
+    <!-- Main content -->
+   
+      {% if paramDeterministicModel %}          
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Parametros del modelo</h2>
+            <div class="col-12">
+              <button type="button" title="Ver resultado" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'paramDeterministicModel-create' %}" data-x-target="#content-modal-formAdd">Agregar</button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body" id="card_body-table">
+            <table id="dtDmodl" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Código del modelo determinista</th>
+                  <th>Nombre de la finca</th>
+                  <th>Altitud</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for i in paramDeterministicModel %}
+                <tr>
+                  <td>{{ i.pk }}</td>
+                  <td>{{ i.finca.name }}</td>
+                  <td>{{ i.altitude }}</td>
+                  <td>
+                    <button type="button" title="Eliminar registro" data-toggle="tooltip" class="btn btn-primary float-right btnDel" style="margin: 1px;" data-name="{{ i.finca.name }}" data-id="{{ i.pk }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <button type="button" title="Ver resultado" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault btnInv" style="margin-right: 5px;" onclick="window.location.href = `{% url 'dDeterministic' i.pk %}`">
+                      <i class="fas fa-eye iBtnInv"></i>
+                      <div class="loader" style="display: none;"></div>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+          <!-- /.card-body -->
+        </div>      
+      {% else %}
+        <div class="invoice p-3 mb-3">
+          <p style="font-size: 1.3rem;">No existe datos de para alguna finca, Haga clic para registrar los parametros.</p>
+          <div class="row no-print">
+            <div class="col-6">
+              <button type="button" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'paramDeterministicModel-create' %}" data-x-target="#content-modal-formAdd">Crear</button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+    <!-- /.content-header -->  
+    <div class="modal fade" id="modal-add">
+      <div class="modal-dialog modal-default">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Parametros para calcular el modelo determinista</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="card-body" id="content-modal-formAdd" hx-target="this">
+            <!-- data modal -->
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+  </div>
+
+{% endblock %}
+{% block js_script %}
+  <script src="{% static 'farmer/plugins/datatables/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/dataTables.responsive.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/responsive.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/dataTables.buttons.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/jszip/jszip.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/pdfmake.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/vfs_fonts.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.html5.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.print.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.colVis.js' %}"></script>
+  <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+  <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/core.js' %}"></script>
+  <script src="{% static 'farmer/plugins/htmx/htmx.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/determiticsModel.js' %}"></script>  
+{% endblock %}

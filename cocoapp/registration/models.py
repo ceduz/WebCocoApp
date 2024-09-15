@@ -1,7 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+def custom_upload_to(instance, filename):
+    old_instance = PersonalInformation.objects.get(pk=instance.pk)
+    old_instance.avatar.delete()
+    return 'personal_information/' + filename
+
+# Create your models here
 
 class Profile(models.Model):
     profile = models.CharField(max_length=50, verbose_name="Nombre perfil")
@@ -30,3 +35,8 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class PersonalInformation(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)

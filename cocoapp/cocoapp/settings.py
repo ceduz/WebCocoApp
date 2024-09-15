@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_recaptcha',
     'django.contrib.staticfiles',
     'farmer.apps.FarmerConfig',
+    'researcher',
+    'agricultural_engineer',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +61,7 @@ ROOT_URLCONF = 'cocoapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-#TIME_ZONE = 'UTC'
 TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
@@ -135,6 +138,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #LOGIN_REDIRECT_URL = 'index_farmer'
 LOGIN_REDIRECT_URL = 'redirect_based_on_profile'
 LOGOUT_REDIRECT_URL = 'login'
+
+#reCAPTCHA 
+RECAPTCHA_PUBLIC_KEY = '6LdqPy0qAAAAAPH2s2QIScr5j5J5n7h549mlOKjq'
+RECAPTCHA_PRIVATE_KEY = '6LdqPy0qAAAAAPYd3JLrtBTMgwSzRiNowqeKHXnq'
+# RECAPTCHA_PUBLIC_KEY = '6Lf8Ay0qAAAAAGEOx_xFsRlawN-NmLuE6IKHXdYv' #test
+# RECAPTCHA_PRIVATE_KEY = '6Lf8Ay0qAAAAAPYljQoL8ckseo0BaOfsHRcndQp1' #test
 
 # Emails
 if DEBUG:

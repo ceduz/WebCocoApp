@@ -1,0 +1,218 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-responsive/css/responsive.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-buttons/css/buttons.bootstrap4.css' %}">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'farmer/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/dist/css/researcher.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Datos Climatológicos</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+    <div class="callout callout-info" style="font-size: 1.2rem;">
+      <h3><i class="fas fa-info"></i> Nota:</h3>
+      Aquí va información relevante para notificar el uso de esta página para el usuario final.
+    </div>
+    <!-- Main content -->
+   
+      {% if apiParametersFinca %}          
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Parametros usados para extraer los datos climatologicos para cada finca</h2>
+            <div class="col-11">
+              <button type="button" title="Ejecutar nuevo proceso" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'climatological-create' %}" data-x-target="#content-modal-formAdd"> Agregar </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body" id="card_body-table">
+            <table id="dtClima" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Código de data</th>
+                  <th>Nombre de la finca</th>
+                  <th>Latitud</th>
+                  <th>Longitud</th>
+                  <th>Fecha de ejecución</th>
+                  <th>Fecha de actualización</th>
+                  <th>Fecha de inicio</th>
+                  <th>Fecha de fin</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for i in apiParametersFinca %}
+                <tr>
+                  <td>{{ i.pk }}</td>
+                  <td>{{ i.finca.name }}</td>
+                  <td>{{ i.latitud }}</td>
+                  <td>{{ i.longitud }}</td>
+                  <td>{{ i.date_exceute | date:"j F Y" }}</td>
+                  <td>{{ i.updated | date:"j F Y" }}</td>
+                  <td>{{ i.date_start | date:"j F Y" }}</td>
+                  <td>{{ i.date_end | date:"j F Y" }}</td>
+                  <td>
+                    <button type="button" title="Consultar datos climatologicos" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault btnInv" style="margin-right: 5px;" onclick="window.location.href = `{% url 'dNasa' i.pk %}`">
+                      <i class="fas fa-eye iBtnInv"></i>
+                      <div class="loader" style="display: none;"></div>
+                    </button>
+                    <button type="button" title="Actualizar datos climatologicos" data-toggle="tooltip" class="btn btn-primary float-right toastsDefaultDefault btnUpdNasa" style="margin-right: 5px;" data-pk="{{ i.pk }}">
+                      <i class="nav-icon fas fa-edit"></i>
+                    </button>
+                    <button type="button" title="Eliminar registro" data-toggle="tooltip" class="btn btn-primary float-right btnDel" style="margin-right: 5px;" data-id="{{ i.pk }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+          <!-- /.card-body -->
+        </div>      
+      {% else %}
+        <div class="invoice p-3 mb-3">
+          <p style="font-size: 1.3rem;">No existe datos climatologicos para alguna finca, Haga clic para registrar los parametros.</p>
+          <div class="row no-print">
+            <div class="col-6">
+              <button type="button"  title="Ejecutar nuevo proceso" class="btn btn-primary float-right toastsDefaultDefault btnAdd"  style="margin-right: 5px;" data-toggle="modal" data-target="#modal-add" data-x-get="{% url 'climatological-create' %}" data-x-target="#content-modal-formAdd">Crear</button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+    <!-- /.content-header -->  
+    <div class="modal fade" id="modal-add">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Parametros para consultar los datos climatologicos</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="card-body" id="content-modal-formAdd" hx-target="this">
+            <!-- data modal -->
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+
+  </div>
+
+{% endblock %}
+{% block js_script %}
+  <script src="{% static 'farmer/plugins/datatables/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/dataTables.responsive.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-responsive/js/responsive.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/dataTables.buttons.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.bootstrap4.js' %}"></script>
+  <script src="{% static 'farmer/plugins/jszip/jszip.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/pdfmake.js' %}"></script>
+  <script src="{% static 'farmer/plugins/pdfmake/vfs_fonts.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.html5.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.print.js' %}"></script>
+  <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.colVis.js' %}"></script>
+  <script src="{% static 'farmer/plugins/htmx/htmx.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/core.js' %}"></script>
+  <script src="{% static 'farmer/dist/js/researcherClima.js' %}"></script>
+  <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+  <script>
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="modal"]').tooltip();
+
+    $('.btnUpdNasa').click(function(){
+        var pk = $(this).data('pk');
+        Swal.fire({
+          title: "¿Esta seguro que desea actualizar los datos climatológicos?",
+          text: "Esto podrá tardar 10 segundos aproximadamente.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#693F29",
+          cancelButtonColor: "#693F29",
+          confirmButtonText: "Sí, estoy seguro",
+          cancelButtonText: "No"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const cardTable = document.getElementById('card_body-table');
+            const div0 = document.createElement('div');
+            div0.id = 'overlay-table';
+            div0.classList.add('overlay-wrapper');
+
+            const div1 = document.createElement('div');
+            div1.classList.add('overlay');
+            div1.setAttribute('style', 'flex-direction: column;');
+
+            const i = document.createElement('i');
+            i.classList.add('fas', 'fa-3x', 'fa-sync-alt', 'fa-spin');
+
+            const div2 = document.createElement('div');
+            div2.classList.add('text-bold', 'pt-2');
+            div2.innerText = "Carga datos de clima desde la API. Este proceso puede tardar unos segundos...";
+            div1.appendChild(i);
+            div1.appendChild(div2);
+            div0.appendChild(div1);
+            cardTable.appendChild(div0);
+            
+            $.ajax({
+                url: '{% url "update_data_nasa" %}',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'pk': pk,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Maneja la respuesta aquí
+                    var divExistente = document.getElementById('overlay-table');
+                    if (divExistente) {
+                        divExistente.parentNode.removeChild(divExistente);
+                    } 
+                    if (response.status == 'aprobado'){
+                      Swal.fire({
+                        title: "Actualización finalizada",
+                        text: response.message,
+                        icon: "aprobado",
+                        confirmButtonColor: "#693F29",
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              location.reload();
+                          }
+                      });
+                    }else{
+                      Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.message,
+                      });
+                    }
+                    
+                },
+                error: function(xhr, status, error) {
+                    // Maneja el error aquí
+                    console.error(xhr.responseText);
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+          }
+        });
+    });
+  });
+  </script>
+{% endblock %}

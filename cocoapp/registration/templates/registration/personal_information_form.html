@@ -1,0 +1,106 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+    <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+    <style>.errorlist{color:red;} label{display: none;}</style>
+{% endblock %}
+{% block content %}
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-center">Información personal</h1>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+
+
+        <div class="card col-md-8 offset-md-2">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                {% if request.user.personalinformation.avatar %}
+                                    <img src="{{ request.user.personalinformation.avatar.url }}" alt="avatar" style="width: 150px;" class="img-fluid">
+                                    <p class="mt-1">¿Borrar? <input type="checkbox" id="avatar-clear_id" name="avatar-clear"/></p>
+                                {% else %}
+                                    <img src="{% static 'farmer/dist/img/user2-160x160.png' %}" class="profile-user-img img-fluid img-circle" style="width: 150px;" alt="avatar">
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <input type="text" name="first_name" class="form-control mt-3" id="id_first_name" placeholder="Nombre" value="{{ form.first_name.value|default_if_none:'' }}">
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.first_name.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="last_name" class="form-control mt-3" id="id_last_name" placeholder="Apellido" value="{{ form.last_name.value|default_if_none:'' }}">
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.last_name.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" class="form-control mt-3" id="id_email" placeholder="Email" value="{{ form.email.value|default_if_none:'' }}">
+                                {% if form.email.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.email.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" name="avatar" class="custom-file-input" id="id_avatar">
+                                        <label class="custom-file-label" for="id_avatar">Seleccione el avatar a subir</label>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <div class="text-danger mt-2">
+                                    {{ form.bio.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <input type="text" class="form-control mt-3" value="Perfil: {{ user_profile.profile.profile }}" readonly placeholder="Perfil">
+                            </div>
+                            <div class="form-group">
+                                <p>Haga clic <a href="{% url 'password_change' %}" style="color: #c9a900;" target="_blank">aquí</a> para cambiar su contraseña.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" class="btn btn-primary mt-3" value="Actualizar">
+                    </div>
+                                        
+                </form>
+            </div>    
+        </div>    
+    </div>
+{% endblock %}
+{% block js_script %}
+    <!-- bs-custom-file-input -->
+    <script src="{% static 'farmer/plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+    <script>
+        $(function () {
+            bsCustomFileInput.init();
+        });
+    </script>
+    {% if messages %}
+        {% for message in messages %}
+        <script>
+            $(document).ready(function() {
+                toastr.{{ message.tags }}('{{ message|escapejs }}');
+            });
+        </script>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

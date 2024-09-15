@@ -24,11 +24,17 @@ urlpatterns = [
     path('', redirect_login, name='redirect_login'),
     # Paths del farmer
     path('farmer/', include('farmer.urls')),
+    # Paths del researcher
+    path('researcher/', include('researcher.urls')),
+    # Paths del agricultural_engineer
+    path('agricultural/', include('agricultural_engineer.urls')),
     # Paths del admin
     path('admin/', admin.site.urls),
     # Paths de auth
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('registration.urls')),
+    #contact
+    path('contact/', include('contact.urls')),
 ]
 
 if settings.DEBUG:

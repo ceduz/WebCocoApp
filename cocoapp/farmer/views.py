@@ -7,12 +7,10 @@ from .models import *
 from django.contrib import messages
 
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
-
 from django.utils.decorators import method_decorator
 #from django.shortcuts import render, HttpResponse
 from django.views.generic.base import TemplateView
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponseRedirect, HttpResponse
 import requests
 import datetime
 import locale
@@ -40,6 +38,19 @@ def farmer_required(view_func):
 
 class HomePageView(TemplateView):
     template_name = "farmer/weather_forecast.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        obj_finca = Finca.objects.filter(owner_name=self.request.user).first()
+
+
+        if obj_finca:
+            context['pk_finca'] = obj_finca.owner_name.id
+        else:
+            context['pk_finca'] = None
+
+        return context
 
     @method_decorator(farmer_required)
     def dispatch(self, *args, **kwargs):
@@ -291,9 +302,9 @@ class CultNovCreateView(LoginRequiredMixin, CreateView):
         #validación si se recibe abono
         if instance.fertilizer > 0: 
             fertilizer = instance.fertilizer
-            pkInventory = instance.inventory.pk
             # Valida el objeto Inventory
             try:
+                pkInventory = instance.inventory.pk
                 if pkInventory:
                     inventary = Inventory.objects.get(pk=pkInventory)
                     inventory_stock = inventary.quantity_stock
@@ -307,7 +318,6 @@ class CultNovCreateView(LoginRequiredMixin, CreateView):
                         inventory_instance.quantity_stock -= fertilizer
                         inventory_instance.quantity_consumed += fertilizer
                         inventory_instance.save()
-                    
             except Inventory.DoesNotExist:
                 form.add_error('fertilizer', 'No existe un abono en el inventario.')
                 return self.form_invalid(form)

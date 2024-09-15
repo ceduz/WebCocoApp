@@ -1,0 +1,72 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'farmer/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'farmer/dist/css/researcher.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                <h1 class="m-0">Datos imputados</h1>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+
+        <div class="callout callout-info" style="font-size: 1.2rem;">
+            <h3><i class="fas fa-info"></i> Nota:</h3>Aquí va información relevante para notificar el uso de esta página para el usuario final.
+        </div>
+        <!-- Main content -->
+        <div class="row">
+        <!-- <div style="display: flex; justify-content: center;"> -->
+            <div class="col-md-3">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Seleccione los datos a consultar</h3>
+        
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" id="cardBody-form">
+                        <div class="form-group">
+                            <select id="inputFinca" class="form-control custom-select">
+                                <option disabled selected>--seleccione una finca--</option>
+                                {% for o in obj %}
+                                    <option value="{{ o.finca_id }}">{{ o.finca.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <div class="col-md-9" id="content-header-main"> 
+
+            </div>
+        <!-- </div> -->
+        </div>
+            
+        
+    </div>
+
+{% endblock %}
+{% block js_script %}
+    <!-- Select2 -->
+    <script src="{% static 'farmer/plugins/select2/js/select2.full.min.js' %}"></script>
+    <!-- InputMask -->
+    <script src="{% static 'farmer/plugins/moment/moment.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/moment/locales.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/inputmask/jquery.inputmask.min.js' %}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{% static 'farmer/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/chart/chartjs.js' %}"></script>
+    <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'farmer/dist/js/researcherImputChart.js' %}"></script>
+{% endblock %}

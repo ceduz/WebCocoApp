@@ -1,0 +1,401 @@
+{% extends 'farmer/base.html' %}
+{% load static %}
+{% block css_stylesheet %}
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="{% static 'farmer/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-responsive/css/responsive.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'farmer/plugins/datatables-buttons/css/buttons.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'farmer/plugins/toastr/toastr.css' %}">
+    <link rel="stylesheet" href="{% static 'farmer/dist/css/agricultural.css' %}">
+{% endblock %}
+{% block content %}
+  <!-- Content Header (Page header) -->
+  {% if aPIParameterNasaFinca %} 
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-1"></div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+                {% for i in aPIParameterNasaFinca %}
+                  <h3 class="profile-username text-center">{{ i.finca.name }}</h3>
+                  <input type="text" hidden id="idparameter" value="{{ i.pk }}">
+                  <p class="text-muted text-center">{{ i.finca.owner_name.first_name }} {{ i.finca.owner_name.last_name }}</p>
+
+                  <ul class="list-group list-group-unbordered mb-3">
+                    <li class="list-group-item">
+                      <strong><i class="fas fa-map-marker-alt mr-1"></i> Geolocalización</strong>
+                      <br>
+                      <b>Latitud</b> <a class="float-right">{{ i.finca.latitud }}</a>
+                      <br>
+                      <b>Longitud</b> <a class="float-right">{{ i.finca.longitud }}</a>
+                    </li>
+                    <li class="list-group-item">
+                      <b>Tamaño de la finca</b> <a class="float-right">{{ i.finca.size_fina }}</a>
+                    </li>
+                    <li class="list-group-item">
+                      <b>Cantidad de árboles cultivados</b> <a class="float-right">{{ i.finca.num_trees_grown }}</a>
+                    </li>
+                    <li class="list-group-item">
+                      <b>Edad de árboles</b> <a class="float-right">{{ i.finca.age_trees }}</a>
+                    </li>
+                  </ul>
+                {% endfor %}
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#dataClim" data-toggle="tab">Datos climatologicos</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#dataPron" data-toggle="tab">Pronosticos</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#dataDrenIrrig" data-toggle="tab">Drenado e irrigación</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="dataClim">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="m-0">Datos climatologicos</h4>
+                      </div>                    
+                      <div class="card-body" id="card_body-table">
+                        <div class="row">
+                          <div class="col-3">
+                            <div class="form-group">
+                              <label for="input-dateStart">Selecione la columna:</label>
+                              <select id="columnSelect" class="form-control custom-select">
+                                <option value="" disabled selected>--columna a visualizar--</option>
+                                <option value="allsky_sfc_sw_dwn">allsky_sfc_sw_dwn</option>
+                                <option value="clrsky_sfc_sw_dwn">clrsky_sfc_sw_dwn</option>
+                                <option value="t2m_max">t2m_max</option>
+                                <option value="t2m_min">t2m_min</option>
+                                <option value="t2mdew">t2mdew</option>
+                                <option value="prectotcorr">prectotcorr</option>
+                                <option value="rh2m">rh2m</option>
+                                <option value="ws2m">ws2m</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-4">
+                            <div class="column" id="divDtStart">
+                              <div class="form-group">
+                                <label for="input-dateStart">Selecione la fecha de inicio:</label>
+                                <div class="input-group date" id="reservationdateStart" data-target-input="nearest">
+                                  <input type="text" id="input-dateStart" name="input-dateStart" required="" data-target="#reservationdateStart" class="form-control datetimepicker-input">
+                                  <div class="input-group-append" data-target="#reservationdateStart" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        
+                          <div class="col-5">
+                            <div class="column" id="divDtLast">
+                              <div class="form-group">
+                                <label for="input-dateStart">Selecione la fecha de fin:</label>
+                                  <div class="input-group date" id="reservationdateLast" data-target-input="nearest">
+                                    <input type="text" id="input-dateLast" name="input-dateStart" required="" data-target="#reservationdateLast" class="form-control datetimepicker-input">
+                                    <div class="input-group-append" data-target="#reservationdateLast" data-toggle="datetimepicker">
+                                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
+                            <button id="btnDataChart" type="button" class="btn btn-primary float-right toastsDefaultDefault">Graficar<div
+                              class="loader" style="display: none;"></div></button>
+                          </div>
+                        </div>
+                        <br>
+                        <div class="col-md-12" id="content-header-main"> 
+                          <!-- grafica -->
+                        </div>
+                        <table id="dataTableClim" class="table table-bordered table-striped"></table>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="dataPron">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="m-0" style="float: left">Datos pronostico a 15 dias</h2>
+                        {% if pronostic_model_obj %}
+                        <div class="card-tools">
+                          <button type="button" title="Eliminar registro del modelo" data-toggle="tooltip" class="btn btn-primary float-right btnDelModel" style="margin: 1px;" data-id="{{ pk_finca }}">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                        {% endif %}
+                      </div>
+                      <!-- /.card-header -->
+                      <div class="card-body" id="card_body-table">
+                        {% if pronostic_model_obj %}
+                        <table id="dataTablePronos" class="table table-bordered table-striped"></table>
+                        {% else %}
+                          <button type="button" id="btnEjcPron" title="Ejecutar pronostico" data-toggle="tooltip" class="btn btn-primary float-left" style="margin-right: 5px;">Ejecutar proceso pronostico</button>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="dataDrenIrrig">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="m-0" style="float: left">Datos de drenado e irrigación</h2>
+                        {% if pk_two_stage_finca %}
+                        <div class="card-tools">
+                          <button type="button" title="Eliminar registro de drenado e irrigación" data-toggle="tooltip" class="btn btn-primary float-right btnDelTwoStg" style="margin: 1px;" data-id="{{ pk_two_stage_finca }}">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                        {% endif %}
+                      </div>
+                      <!-- /.card-header -->
+                      <div class="card-body">
+                        {% if two_stage_finca_model_obj %}
+                          {% for key, value in two_stage_finca_model_obj.items %}
+                          Escenario <strong>{{ key }}</strong>: Irrigación para el día 1: <strong>{{ value.I_T0 }}</strong>. Drenado para el día 1: <strong>{{ value.D_T0 }}</strong> Irrigación para el día 15: <strong>{{ value.I_T15 }}</strong>. Drenado para el día 15: <strong>{{ value.D_T15 }}</strong>
+                          <br>
+                          {% endfor %}
+                        {% else %}
+                          <button type="button" id="btnEjcDreIrri" title="Ejecutar calculo de drenado e irrigación" data-toggle="tooltip" class="btn btn-primary float-left" style="margin-right: 5px;">Ejecutar proceso</button>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+  {% else %}
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Datos Climatológicos</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+
+      <div class="callout callout-info" style="font-size: 1.2rem;">
+        <h3><i class="fas fa-info"></i> Nota:</h3>
+        Aquí va información relevante para notificar el uso de esta página para el usuario final.
+      </div>
+      <div class="invoice p-3 mb-3">
+        <p style="font-size: 1.3rem;">No existe datos climatologicos para la finca, Haga clic para registrar los parametros.</p>
+        <div class="row no-print">
+          <div class="col-6">
+            <button type="button" title="Ir a ejecutar nuevo proceso para alguna finca" data-toggle="tooltip" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="window.location.href = `{% url 'aPIParameterNasaFinca' %}`">Ir a ejecutar proceso</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}
+{% block js_script %}
+    <script src="{% static 'farmer/plugins/datatables/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-responsive/js/dataTables.responsive.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-responsive/js/responsive.bootstrap4.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-buttons/js/dataTables.buttons.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.bootstrap4.js' %}"></script>
+    <script src="{% static 'farmer/plugins/jszip/jszip.js' %}"></script>
+    <script src="{% static 'farmer/plugins/pdfmake/pdfmake.js' %}"></script>
+    <script src="{% static 'farmer/plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.html5.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.print.js' %}"></script>
+    <script src="{% static 'farmer/plugins/datatables-buttons/js/buttons.colVis.js' %}"></script>
+    <!-- Select2 -->
+    <script src="{% static 'farmer/plugins/select2/js/select2.full.min.js' %}"></script>
+    <!-- InputMask -->
+    <script src="{% static 'farmer/plugins/moment/moment.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/moment/locales.min.js' %}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{% static 'farmer/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/chart/chartjs.js' %}"></script>
+    <script src="{% static 'farmer/plugins/inputmask/jquery.inputmask.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'farmer/plugins/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'farmer/dist/js/core.js' %}"></script>
+    <script src="{% static 'farmer/plugins/htmx/htmx.js' %}"></script>
+    <script src="{% static 'farmer/dist/js/dataClimFinca.js' %}"></script>
+    <script>
+      $('#btnEjcPron').click(function(){
+        Swal.fire({
+            title: "¿Esta seguro que desea ejecutar el proceso de pronostivo para la finca?",
+            text: "Esto podrá tardar 1 minuto aproximadamente.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#693F29",
+            cancelButtonColor: "#693F29",
+            confirmButtonText: "Sí, estoy seguro",
+            cancelButtonText: "No"
+        }).then((result) => {
+            if (result.isConfirmed) {
+              const div0 = document.createElement('div');
+              div0.id = 'overlay-table';
+              div0.classList.add('overlay-wrapper');
+  
+              const div1 = document.createElement('div');
+              div1.classList.add('overlay');
+              div1.setAttribute('style', 'flex-direction: column;');
+  
+              const i = document.createElement('i');
+              i.classList.add('fas', 'fa-3x', 'fa-sync-alt', 'fa-spin');
+  
+              const div2 = document.createElement('div');
+              div2.classList.add('text-bold', 'pt-2');
+              div2.innerText = "Carga datos de clima desde la API. Este proceso puede tardar unos minutos...";
+              div1.appendChild(i);
+              div1.appendChild(div2);
+              div0.appendChild(div1);
+              document.body.appendChild(div0);
+              var id = $('#idparameter').val();
+              $.ajax({
+                  url: '{% url "pronostic-create" %}',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {
+                      'finca': id,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      // Maneja la respuesta aquí
+                      var divExistente = document.getElementById('overlay-table');
+                      if (divExistente) {
+                          divExistente.parentNode.removeChild(divExistente);
+                      } 
+                      if (response.status == 'success'){
+                        Swal.fire({
+                          title: "Pronostico finalizado",
+                          text: response.message,
+                          icon: "success",
+                          confirmButtonColor: "#693F29",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                      }else{
+                        Swal.fire({
+                          icon: "error",
+                          title: "Oops...",
+                          text: response.message,
+                        });
+                      }
+                      
+                  },
+                  error: function(xhr, status, error) {
+                      // Maneja el error aquí
+                      console.error(xhr.responseText);
+                      alert('Error: ' + xhr.responseText);
+                  }
+              });
+            }
+        });
+    });
+
+    $('#btnEjcDreIrri').click(function(){
+        Swal.fire({
+            title: "¿Esta seguro que desea calcular el drenado y la irrigación para la finca",
+            text: "Esto podrá tardar 1 minuto aproximadamente.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#693F29",
+            cancelButtonColor: "#693F29",
+            confirmButtonText: "Sí, estoy seguro",
+            cancelButtonText: "No"
+        }).then((result) => {
+            if (result.isConfirmed) {
+              const div0 = document.createElement('div');
+              div0.id = 'overlay-table';
+              div0.classList.add('overlay-wrapper');
+  
+              const div1 = document.createElement('div');
+              div1.classList.add('overlay');
+              div1.setAttribute('style', 'flex-direction: column;');
+  
+              const i = document.createElement('i');
+              i.classList.add('fas', 'fa-3x', 'fa-sync-alt', 'fa-spin');
+  
+              const div2 = document.createElement('div');
+              div2.classList.add('text-bold', 'pt-2');
+              div2.innerText = "Carga datos de clima desde la API. Este proceso puede tardar unos minutos...";
+              div1.appendChild(i);
+              div1.appendChild(div2);
+              div0.appendChild(div1);
+              document.body.appendChild(div0);
+              var id = $('#idparameter').val();
+              $.ajax({
+                  url: '{% url "drenIrrig-create" %}',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {
+                      'finca': id,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      // Maneja la respuesta aquí
+                      var divExistente = document.getElementById('overlay-table');
+                      if (divExistente) {
+                          divExistente.parentNode.removeChild(divExistente);
+                      } 
+                      if (response.status == 'success'){
+                        Swal.fire({
+                          title: "Pronostico finalizado",
+                          text: response.message,
+                          icon: "success",
+                          confirmButtonColor: "#693F29",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                      }else{
+                        Swal.fire({
+                          icon: "error",
+                          title: "Oops...",
+                          text: response.message,
+                        });
+                      }
+                      
+                  },
+                  error: function(xhr, status, error) {
+                      // Maneja el error aquí
+                      console.error(xhr.responseText);
+                      alert('Error: ' + xhr.responseText);
+                  }
+              });
+            }
+        });
+    });
+    </script>
+{% endblock %}
